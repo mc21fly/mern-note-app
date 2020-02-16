@@ -12,11 +12,7 @@ then
 
 ### `node server.js`
 
-then
-
-### `cd ..`
-
-then
+### then on new console in project folder
 
 ### `npm start`
 
