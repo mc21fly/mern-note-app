@@ -65,7 +65,7 @@ export default class NoteEditor extends Component {
                 </div>
 
                 <div className="form-group d-flex justify-content-center">
-                    <span onClick={() => this.props.clickHandler()} className="btn btn-primary">{this.state.from} your note</span>
+                    <span onMouseOver={() => this.props.changeDescription(this.state.editorState)} onClick={() => this.props.clickHandler()} className="btn btn-primary">{this.state.from} your note</span>
                 </div>
             </form>
         )
