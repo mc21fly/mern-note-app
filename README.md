@@ -6,14 +6,18 @@ In project folder
 
 then
 
-### `npm start`
-
-then
-
 ### `cd backend`
 
 then
 
 ### `node server.js`
+
+then
+
+### `cd ..`
+
+then
+
+### `npm start`
 
 ### MongoDB required!
