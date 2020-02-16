@@ -46,8 +46,6 @@ export default class NoteEditor extends Component {
             }
             this.onChange(setEditorState(this.state.note.description))
             $('#note-title').val(this.state.note.title)
-        } else {
-            
         }
     }
 
