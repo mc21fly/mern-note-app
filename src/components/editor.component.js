@@ -11,7 +11,6 @@ export default class NoteEditor extends Component {
 
         this.state = { 
             editorState: EditorState.createEmpty(),
-            myNoteEditor: undefined,
             from: props.from,
             note: this.props.note
                 ? {
@@ -78,7 +77,7 @@ export default class NoteEditor extends Component {
         this.editor.current.focus();
     }
 
-    changeTitle(title) {
+    setTitle(title) {
         this.setState(p => ({
             note: {
                 id: p.note.id,
@@ -90,7 +89,7 @@ export default class NoteEditor extends Component {
         }))
     }
 
-    changeDescription(editorState) {
+    setDescription(editorState) {
         this.setState(p => ({
             note: {
                 id: p.note.id,
@@ -116,7 +115,7 @@ export default class NoteEditor extends Component {
     }
 
     handleClick() {
-        this.props.clickHandler(this.state.note)
+        this.props.clickHandler(this.state.note);
     }
 
     render() {
@@ -124,13 +123,13 @@ export default class NoteEditor extends Component {
             <form>
                 <div className="form-group">
                     <label className="text-muted">Title</label>
-                    <input type="text" className="form-control" id="note-title" onChange={() => this.changeTitle($('#note-title').val())} />
+                    <input type="text" className="form-control" id="note-title" onChange={() => this.setTitle($('#note-title').val())} />
                 </div>
 
                 <label className="text-muted">Your note</label>
                 
                 <div id="editor" className="editor" onClick={this.focusEditor.bind(this)}>
-                    <Editor ref={this.editor} editorState={this.state.editorState} onChange={(editorState) => {this.onChange(editorState) ;this.changeDescription(this.state.editorState)}} />
+                    <Editor ref={this.editor} editorState={this.state.editorState} onChange={(editorState) => {this.onChange(editorState) ;this.setDescription(this.state.editorState)}} />
                 </div>
 
                 <div className="container-fluid p-0">
@@ -141,7 +140,7 @@ export default class NoteEditor extends Component {
                 </div>
 
                 <div className="form-group d-flex justify-content-center">
-                    <span onClick={this.handleClick.bind(this)} className="btn btn-primary">{this.state.from} your note</span>
+                    <span onMouseOver={() => this.setDescription(this.state.editorState)} onClick={this.handleClick.bind(this)} className="btn btn-primary">{this.state.from} your note</span>
                 </div>
             </form>
         )

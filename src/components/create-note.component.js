@@ -6,8 +6,6 @@ import NoteEditor from './editor.component';
 export default function CreateNote() {
 
     function clickHandler(recivedNote) {
-        console.log(recivedNote)
-
         if((recivedNote.title !== undefined || '') && (recivedNote.description !== undefined || '')) {
             axios.post('http://localhost:3300/create', recivedNote)
             .then(result => {
@@ -27,7 +25,7 @@ export default function CreateNote() {
 
             <NoteEditor
                 from={'Create'}
-                clickHandler={(recivedNote) => clickHandler(recivedNote)}
+                clickHandler={clickHandler}
             />
 
         </div>
