@@ -47,11 +47,11 @@ export default class NoteEditor extends Component {
         return(
             <form>
                 <div className="form-group">
-                    <label for="note-title text-muted">Title</label>
+                    <label className="text-muted">Title</label>
                     <input type="text" className="form-control" id="note-title" onChange={() => this.props.changeTitle()} />
                 </div>
 
-                <label for="editor text-muted">Your note</label>
+                <label className="text-muted">Your note</label>
                 
                 <div id="editor" className="editor" onClick={this.focusEditor.bind(this)}>
                     <Editor ref={this.editor} editorState={this.state.editorState} onChange={(editorState) => {this.onChange(editorState) ;this.props.changeDescription(this.state.editorState)}} />

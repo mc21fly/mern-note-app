@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { EditorState, convertFromHTML, ContentState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import path from 'path';
@@ -19,20 +19,6 @@ export default function EditNote() {
 
     const [noteEditor, setNoteEditor] = useState();
 
-    // eslint-disable-next-line
-    const changeTitle = useCallback(() => {
-        setNote(prev => {
-            return {
-                title: $('#note-title').val(),
-                description: prev.description,
-                postDate: prev.postDate,
-                editDate: setEditDate()
-            }
-        })
-    })
-
-    const desc = useRef();
-
     useEffect(() => {
         axios.get(`http://localhost:3300/edit/${noteId}`)
             .then(result => {
@@ -40,18 +26,17 @@ export default function EditNote() {
                     title: result.data.title,
                     description: result.data.description,
                     postDate: result.data.postDate
-                })
-                desc.current = result.data.description;
+                    })
+                console.log(note)
                 $('#note-title').val(result.data.title)
-                console.log(desc.current)
             })
             .catch(e => console.log(e))
-            // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [])
 
     useEffect(() => {
         function setEditorState() {
-            const html = desc.current;
+            const html = note.description
             const blocksFromHTML = convertFromHTML(`${html}`);
             const state = ContentState.createFromBlockArray(
                 blocksFromHTML.contentBlocks,
@@ -74,10 +59,20 @@ export default function EditNote() {
 
 
     function clickHandler() {
-        console.log(note)
         axios.post(`http://localhost:3300/edit/${noteId}`, note)
             .then(result => window.history.back())
             .catch(error => console.log(error))
+    }
+
+    function changeTitle() {
+        setNote(prev => {
+            return {
+                title: $('#note-title').val(),
+                description: prev.description,
+                postDate: prev.postDate,
+                editDate: setEditDate()
+            }
+        })
     }
 
     function changeDescription(content) {

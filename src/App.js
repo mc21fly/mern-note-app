@@ -15,7 +15,7 @@ export default function App() {
   const [NON, setNON] = useState();
 
   useEffect(() => {
-    document.title = NON === undefined || 0 ? `Note.app` : `Note.app [${NON}]`
+    document.title = (NON === undefined || 0 ? `Note.app` : `Note.app [${NON}]`)
   })
 
   function setNumberOfNotes(data) {
