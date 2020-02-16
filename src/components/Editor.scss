@@ -1,4 +1,4 @@
-.DraftEditor-root {
+.editor {
     border: 1px solid #ced4da;
     border-radius: .25rem;
     padding: .375rem .75rem;
@@ -6,7 +6,16 @@
     color: #495057;
     overflow: auto;
     resize: vertical;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     height: 150px;
     cursor: text;
+
+    &:focus-within {
+        color:#495057;
+        background-color:#fff;
+        border-color:#80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+    }
 }
+

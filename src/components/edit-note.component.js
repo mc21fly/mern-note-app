@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { EditorState, convertFromHTML, ContentState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import path from 'path';
@@ -31,6 +31,8 @@ export default function EditNote() {
         })
     })
 
+    const desc = useRef();
+
     useEffect(() => {
         axios.get(`http://localhost:3300/edit/${noteId}`)
             .then(result => {
@@ -39,7 +41,9 @@ export default function EditNote() {
                     description: result.data.description,
                     postDate: result.data.postDate
                 })
+                desc.current = result.data.description;
                 $('#note-title').val(result.data.title)
+                console.log(desc.current)
             })
             .catch(e => console.log(e))
             // eslint-disable-next-line
@@ -47,7 +51,7 @@ export default function EditNote() {
 
     useEffect(() => {
         function setEditorState() {
-            const html = note.description
+            const html = desc.current;
             const blocksFromHTML = convertFromHTML(`${html}`);
             const state = ContentState.createFromBlockArray(
                 blocksFromHTML.contentBlocks,

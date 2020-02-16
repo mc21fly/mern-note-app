@@ -24,7 +24,7 @@ export default function Modal(props) {
                         </button>
                     </div>
 
-                    <div id="description-modal" className="modal-body text-justify"></div>
+                    <div id="description-modal" className="modal-body text-break text-justify"></div>
                     
                     <div className="modal-footer">
                         <span className="text-muted" style={{fontSize: '0.75rem'}}>{!props.data.editDate ? "" : `Last edited: ${props.data.editDate}`}</span>
