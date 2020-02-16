@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import $ from "jquery";
 import axios from 'axios';
+import $ from "jquery";
+
 import Note from './note.component';
 import Modal from './modal.component';
 

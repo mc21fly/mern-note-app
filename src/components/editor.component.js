@@ -1,8 +1,9 @@
 import React, { Component, createRef } from 'react';
 import { Editor, RichUtils, EditorState, ContentState, convertFromHTML } from 'draft-js';
-import $ from 'jquery';
-import './Editor.scss';
 import { stateToHTML } from 'draft-js-export-html';
+import $ from 'jquery';
+
+import './Editor.scss';
 
 export default class NoteEditor extends Component {
     constructor(props) {
@@ -81,7 +82,7 @@ export default class NoteEditor extends Component {
 
     changeTitle(title) {
         this.setState(p => ({
-            ['note']: {
+            note: {
                 id: p.note.id,
                 title: title,
                 description: p.note.description,
@@ -93,7 +94,7 @@ export default class NoteEditor extends Component {
 
     changeDescription(editorState) {
         this.setState(p => ({
-            ['note']: {
+            note: {
                 id: p.note.id,
                 title: p.note.title,
                 description: stateToHTML(editorState.getCurrentContent()),

@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
-import {stateToHTML} from 'draft-js-export-html';
-import { EditorState } from 'draft-js';
+import React from 'react';
 import axios from 'axios';
-import $ from 'jquery';
 
 import NoteEditor from './editor.component';
 

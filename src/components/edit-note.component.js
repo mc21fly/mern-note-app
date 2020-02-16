@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { stateToHTML } from 'draft-js-export-html';
+import React, { useState } from 'react';
 import path from 'path';
 import axios from 'axios';
-import $ from 'jquery';
+
 import NoteEditor from './editor.component';
-import './Editor.scss';
 
 export default function EditNote() {
 
+    // eslint-disable-next-line
     const [noteToSend, setNoteToSend] = useState(path.basename(window.location.href))
 
     function clickHandler(recivedNote) {
