@@ -1,17 +1,53 @@
 import React, { Component, createRef } from 'react';
-import { Editor, RichUtils } from 'draft-js';
+import { Editor, RichUtils, EditorState, ContentState, convertFromHTML } from 'draft-js';
+import $ from 'jquery';
 import './Editor.scss';
+import { stateToHTML } from 'draft-js-export-html';
 
 export default class NoteEditor extends Component {
     constructor(props) {
         super(props);
 
         this.state = { 
-            editorState: this.props.editorStateHandler,
-            from: props.from
+            editorState: EditorState.createEmpty(),
+            myNoteEditor: undefined,
+            from: props.from,
+            note: this.props.note
+                ? {
+                    id: this.props.note._id,
+                    title: this.props.note.title,
+                    description: this.props.note.description,
+                    postDate: this.props.note.postDate,
+                    editDate: this.props.note.editDate
+                }
+                
+                : {
+                    title: undefined,
+                    description: undefined,
+                    postDate: undefined,
+                    editDate: undefined
+                }
         };
 
         this.editor = createRef();
+    }
+
+    componentDidMount() {
+        if(this.state.from === 'Edit') {
+            function setEditorState(html) {
+                const blocksFromHTML = convertFromHTML(`${html}`);
+                const state = ContentState.createFromBlockArray(
+                    blocksFromHTML.contentBlocks,
+                    blocksFromHTML.entityMap
+                )
+            
+                return EditorState.createWithContent(state);
+            }
+            this.onChange(setEditorState(this.state.note.description))
+            $('#note-title').val(this.state.note.title)
+        } else {
+            
+        }
     }
 
     onChange(editorState) {
@@ -43,18 +79,59 @@ export default class NoteEditor extends Component {
         this.editor.current.focus();
     }
 
+    changeTitle(title) {
+        this.setState(p => ({
+            ['note']: {
+                id: p.note.id,
+                title: title,
+                description: p.note.description,
+                postDate: this.state.from !== 'Edit' ? this.setDate() : p.note.postDate,
+                editDate: this.state.from !== 'Edit' ? undefined : this.setDate()
+            }
+        }))
+    }
+
+    changeDescription(editorState) {
+        this.setState(p => ({
+            ['note']: {
+                id: p.note.id,
+                title: p.note.title,
+                description: stateToHTML(editorState.getCurrentContent()),
+                postDate: this.state.from !== 'Edit' ? this.setDate() : p.note.postDate,
+                editDate: this.state.from !== 'Edit' ? undefined : this.setDate()
+            }
+        }))
+    }
+
+    setDate() {
+        const date = new Date();
+
+        const D = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+        const M = date.getMonth() < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+        const Y = date.getFullYear();
+
+        const h = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+        const m = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+        return `${D}/${M}/${Y} at ${h > 23 ? '00' : h}:${m}`;
+    }
+
+    handleClick() {
+        this.props.clickHandler(this.state.note)
+    }
+
     render() {
         return(
             <form>
                 <div className="form-group">
                     <label className="text-muted">Title</label>
-                    <input type="text" className="form-control" id="note-title" onChange={() => this.props.changeTitle()} />
+                    <input type="text" className="form-control" id="note-title" onChange={() => this.changeTitle($('#note-title').val())} />
                 </div>
 
                 <label className="text-muted">Your note</label>
                 
                 <div id="editor" className="editor" onClick={this.focusEditor.bind(this)}>
-                    <Editor ref={this.editor} editorState={this.state.editorState} onChange={(editorState) => {this.onChange(editorState) ;this.props.changeDescription(this.state.editorState)}} />
+                    <Editor ref={this.editor} editorState={this.state.editorState} onChange={(editorState) => {this.onChange(editorState) ;this.changeDescription(this.state.editorState)}} />
                 </div>
 
                 <div className="container-fluid p-0">
@@ -65,7 +142,7 @@ export default class NoteEditor extends Component {
                 </div>
 
                 <div className="form-group d-flex justify-content-center">
-                    <span onMouseOver={() => this.props.changeDescription(this.state.editorState)} onClick={() => this.props.clickHandler()} className="btn btn-primary">{this.state.from} your note</span>
+                    <span onClick={this.handleClick.bind(this)} className="btn btn-primary">{this.state.from} your note</span>
                 </div>
             </form>
         )
