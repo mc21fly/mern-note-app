@@ -1,39 +1,34 @@
-import React, { Component, createRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Editor, RichUtils, EditorState, ContentState, convertFromHTML } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import $ from 'jquery';
 
 import './Editor.scss';
 
-export default class NoteEditor extends Component {
-    constructor(props) {
-        super(props);
+export default function NoteEditor(props) {
 
-        this.state = { 
-            editorState: EditorState.createEmpty(),
-            from: props.from,
-            note: this.props.note
-                ? {
-                    id: this.props.note._id,
-                    title: this.props.note.title,
-                    description: this.props.note.description,
-                    postDate: this.props.note.postDate,
-                    editDate: this.props.note.editDate
-                }
-                
-                : {
-                    title: undefined,
-                    description: undefined,
-                    postDate: undefined,
-                    editDate: undefined
-                }
-        };
+    const [editorState, setEditorState] = useState(EditorState.createEmpty());
+    // eslint-disable-next-line
+    const [from, setFrom] = useState(props.from);
+    const [note, setNote] = useState(props.note
+            ? {
+                id: props.note._id,
+                title: props.note.title,
+                description: props.note.description,
+                postDate: props.note.postDate,
+                editDate: props.note.editDate
+            }
+            : {
+                title: undefined,
+                description: undefined,
+                postDate: undefined,
+                editDate: undefined
+            }
+        )
+    const editor = useRef();
 
-        this.editor = createRef();
-    }
-
-    componentDidMount() {
-        if(this.state.from === 'Edit') {
+    useEffect(() => {
+        if(from === 'Edit') {
             function setEditorState(html) {
                 const blocksFromHTML = convertFromHTML(`${html}`);
                 const state = ContentState.createFromBlockArray(
@@ -43,65 +38,65 @@ export default class NoteEditor extends Component {
             
                 return EditorState.createWithContent(state);
             }
-            this.onChange(setEditorState(this.state.note.description))
-            $('#note-title').val(this.state.note.title)
+            console.log(note)
+            onChange(setEditorState(note.description))
+            $('#note-title').val(note.title)
         }
+        // eslint-disable-next-line
+    }, [ ])
+
+    function onChange(editorState) {
+        setEditorState(editorState)
     }
 
-    onChange(editorState) {
-        this.setState({editorState})
-    }
-
-    makeBold() {
-        this.onChange(RichUtils.toggleInlineStyle(
-            this.state.editorState,
+    function makeBold() {
+        onChange(RichUtils.toggleInlineStyle(
+            editorState,
             'BOLD'
         ))
     }
 
-    makeItalic() {
-        this.onChange(RichUtils.toggleInlineStyle(
-            this.state.editorState,
+    function makeItalic() {
+        onChange(RichUtils.toggleInlineStyle(
+            editorState,
             'ITALIC'
         ))
     }
 
-    makeUnderline() {
-        this.onChange(RichUtils.toggleInlineStyle(
-            this.state.editorState,
+    function makeUnderline() {
+        onChange(RichUtils.toggleInlineStyle(
+            editorState,
             'UNDERLINE'
         ))
     }
 
-    focusEditor() {
-        this.editor.current.focus();
+    function focusEditor() {
+        editor.current.focus();
     }
 
-    setTitle(title) {
-        this.setState(p => ({
-            note: {
-                id: p.note.id,
+    function setTitle(title) {
+        setNote(p => ({
+                id: p.id,
                 title: title,
-                description: p.note.description,
-                postDate: this.state.from !== 'Edit' ? this.setDate() : p.note.postDate,
-                editDate: this.state.from !== 'Edit' ? undefined : this.setDate()
+                description: p.description,
+                postDate: from !== 'Edit' ? setDate() : p.postDate,
+                editDate: from !== 'Edit' ? undefined : setDate()
             }
-        }))
+        ))
     }
 
-    setDescription(editorState) {
-        this.setState(p => ({
-            note: {
-                id: p.note.id,
-                title: p.note.title,
+    function setDescription(editorState) {
+        setNote(p => ({
+                id: p.id,
+                title: p.title,
                 description: stateToHTML(editorState.getCurrentContent()),
-                postDate: this.state.from !== 'Edit' ? this.setDate() : p.note.postDate,
-                editDate: this.state.from !== 'Edit' ? undefined : this.setDate()
+                postDate: from !== 'Edit' ? setDate() : p.postDate,
+                editDate: from !== 'Edit' ? undefined : setDate()
             }
-        }))
+        ))
     }
 
-    setDate() {
+    function setDate() {
         const date = new Date();
 
         const D = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
@@ -114,35 +109,33 @@ export default class NoteEditor extends Component {
         return `${D}/${M}/${Y} at ${h > 23 ? '00' : h}:${m}`;
     }
 
-    handleClick() {
-        this.props.clickHandler(this.state.note);
+    function handleClick() {
+        props.clickHandler(note);
     }
+    
+    return (
+        <form>
+            <div className="form-group">
+                <label className="text-muted">Title</label>
+                <input type="text" className="form-control" id="note-title" onChange={() => setTitle($('#note-title').val())} />
+            </div>
 
-    render() {
-        return(
-            <form>
-                <div className="form-group">
-                    <label className="text-muted">Title</label>
-                    <input type="text" className="form-control" id="note-title" onChange={() => this.setTitle($('#note-title').val())} />
-                </div>
+            <label className="text-muted">Your note</label>
+            
+            <div id="editor" className="editor" onClick={focusEditor}>
+                <Editor ref={editor} editorState={editorState} onChange={(editorState) => { onChange(editorState); setDescription(editorState) }} />
+            </div>
 
-                <label className="text-muted">Your note</label>
-                
-                <div id="editor" className="editor" onClick={this.focusEditor.bind(this)}>
-                    <Editor ref={this.editor} editorState={this.state.editorState} onChange={(editorState) => {this.onChange(editorState) ;this.setDescription(this.state.editorState)}} />
-                </div>
+            <div className="container-fluid p-0">
+                <span onClick={makeBold} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-bold"></i></span>
+                <span onClick={makeItalic} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-italic"></i></span>
+                <span onClick={makeUnderline} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-underline"></i></span>
+                <span style={{fontSize: '0.7rem'}} className="text-muted">Mark text and then press button to style it</span>
+            </div>
 
-                <div className="container-fluid p-0">
-                    <span onClick={this.makeBold.bind(this)} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-bold"></i></span>
-                    <span onClick={this.makeItalic.bind(this)} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-italic"></i></span>
-                    <span onClick={this.makeUnderline.bind(this)} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-underline"></i></span>
-                    <span style={{fontSize: '0.7rem'}} className="text-muted">Mark text and then press button to style it</span>
-                </div>
-
-                <div className="form-group d-flex justify-content-center">
-                    <span onMouseOver={() => this.setDescription(this.state.editorState)} onClick={this.handleClick.bind(this)} className="btn btn-primary">{this.state.from} your note</span>
-                </div>
-            </form>
-        )
-    }
+            <div className="form-group d-flex justify-content-center">
+                <span onMouseOver={() => setDescription(editorState)} onClick={handleClick} className="btn btn-primary">{from} your note</span>
+            </div>
+        </form>
+    )
 }
