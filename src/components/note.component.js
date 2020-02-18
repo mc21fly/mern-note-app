@@ -49,7 +49,7 @@ export default function Note(props) {
 
                     <h6 className="card-subtitle mb-2 text-muted" style={{fontSize: '0.9rem'}}>{props.postDate}</h6>
                     
-                    <p id="description" style={{maxHeight: '50px', lineHeight: '0.5rem'}} className="card-text text-truncate overflow-hidden mt-2 pt-2"></p>
+                    <p id="description" style={{maxHeight: '50px'}} className="card-text overflow-hidden mt-2 pt-2"></p>
 
                     <div className="container p-0 d-flex align-items-end justify-content-between">
                         <span className="text-muted" style={{fontSize: '0.75rem'}}>{!props.editDate ? "" : `Last edited: ${props.editDate}`}</span>
