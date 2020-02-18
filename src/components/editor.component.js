@@ -49,25 +49,39 @@ export default function NoteEditor(props) {
         setEditorState(editorState)
     }
 
-    function makeBold() {
+    function makeBold(e) {
+        e.preventDefault()
         onChange(RichUtils.toggleInlineStyle(
             editorState,
             'BOLD'
         ))
     }
 
-    function makeItalic() {
+    function makeItalic(e) {
+        e.preventDefault()
         onChange(RichUtils.toggleInlineStyle(
             editorState,
             'ITALIC'
         ))
     }
 
-    function makeUnderline() {
+    function makeUnderline(e) {
+        e.preventDefault()
         onChange(RichUtils.toggleInlineStyle(
             editorState,
             'UNDERLINE'
         ))
+    }
+
+    function handleKeyCommand(command, editorState) {
+        const newState = RichUtils.handleKeyCommand(editorState, command)
+
+        if(newState) {
+            onChange(newState)
+            return 'handled';
+        }
+
+        return 'not-handled';
     }
 
     function focusEditor() {
@@ -123,14 +137,14 @@ export default function NoteEditor(props) {
             <label className="text-muted">Your note</label>
             
             <div id="editor" className="editor" onClick={focusEditor}>
-                <Editor ref={editor} editorState={editorState} onChange={(editorState) => { onChange(editorState); setDescription(editorState) }} />
+                <Editor ref={editor}  editorState={editorState} handleKeyCommand={handleKeyCommand} onChange={(editorState) => { onChange(editorState); setDescription(editorState) }} />
             </div>
 
             <div className="container-fluid p-0">
-                <span onClick={makeBold} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-bold"></i></span>
-                <span onClick={makeItalic} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-italic"></i></span>
-                <span onClick={makeUnderline} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-underline"></i></span>
-                <span style={{fontSize: '0.7rem'}} className="text-muted">Mark text and then press button to style it</span>
+                <span onMouseDown={(e) => {makeBold(e)}} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-bold"></i></span>
+                <span onMouseDown={(e) => makeItalic(e)} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-italic"></i></span>
+                <span onClick={(e) => makeUnderline(e)} className="badge badge-secondary h1 mr-1" style={{cursor: 'pointer'}}><i className="fas fa-underline"></i></span>
+                <span style={{fontSize: '0.7rem'}} className="text-muted"><b>CTRL + B</b>, <i>CTRL + I</i>, <u>CTRL + U</u></span>
             </div>
 
             <div className="form-group d-flex justify-content-center">
